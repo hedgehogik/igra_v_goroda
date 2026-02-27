@@ -1,0 +1,8 @@
+pyTelegramBotAPI==4.25.0
+gigachat==0.1.36
+openai==1.82.0
+SpeechRecognition==3.14.1
+requests==2.32.3
+pydub==0.25.1
+gTTS==2.5.4
+python-dotenv==1.1.0
