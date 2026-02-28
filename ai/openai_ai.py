@@ -7,7 +7,7 @@ from .base_ai import BaseAI
 class OpenAICompatibleAI(BaseAI):
     """Провайдер для OpenAI-совместимых API (VseGPT и т.д.)."""
 
-    def __init__(self, api_key: str, base_url: str, model: str = "openai/gpt-4o"):
+    def __init__(self, api_key: str, base_url: str, model: str = "openai/gpt-4o-mini"):
         self._client = OpenAI(api_key=api_key, base_url=base_url)
         self._model = model
 
