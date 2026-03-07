@@ -6,6 +6,7 @@ from ai.base_ai import BaseAI
 from ai.gigachat_ai import GigaChatAI
 from ai.openai_ai import OpenAICompatibleAI
 from config import Config
+from database.db_manager import DatabaseManager
 from .cities_game import CitiesGame
 
 
@@ -27,15 +28,23 @@ AI_DISPLAY_NAMES = {
 class GameManager:
     """Управляет играми всех пользователей."""
 
-    def __init__(self):
+    def __init__(self, db: DatabaseManager):
         self._games: Dict[int, CitiesGame] = {}
         self._ai_providers: Dict[int, BaseAI] = {}
         self._ai_keys: Dict[int, str] = {}
+        self._db = db
+
+    def _create_ai(self, ai_key: str, chat_id: int) -> BaseAI:
+        """Создаёт AI-провайдер с подключённой БД."""
+        ai = _AI_FACTORIES[ai_key]()
+        ai.set_db(self._db)
+        ai.set_chat_id(chat_id)
+        return ai
 
     def set_ai(self, chat_id: int, ai_key: str) -> str:
         if ai_key not in _AI_FACTORIES:
             return "❌ Неизвестная модель."
-        self._ai_providers[chat_id] = _AI_FACTORIES[ai_key]()
+        self._ai_providers[chat_id] = self._create_ai(ai_key, chat_id)
         self._ai_keys[chat_id] = ai_key
         return f"✅ Модель переключена на *{AI_DISPLAY_NAMES[ai_key]}*"
 
@@ -72,6 +81,7 @@ class GameManager:
             return {"error": "Игра не начата. Нажми /start"}
 
         ai = self.get_ai(chat_id)
+        ai.set_chat_id(chat_id)
         game = self._games[chat_id]
 
         return game.process_turn(
@@ -82,7 +92,13 @@ class GameManager:
 
     def get_city_info(self, chat_id: int, city_name: str) -> str:
         ai = self.get_ai(chat_id)
+        ai.set_chat_id(chat_id)
         return ai.get_city_info(city_name)
 
     def game_exists(self, chat_id: int) -> bool:
         return chat_id in self._games
+
+    def get_db_stats(self) -> str:
+        """Статистика БД."""
+        count = self._db.get_logs_count()
+        return f"📊 Всего запросов к AI в БД: {count}"

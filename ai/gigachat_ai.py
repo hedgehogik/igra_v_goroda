@@ -1,4 +1,4 @@
-"""AI-провайдер на основе GigaChat (Сбер)."""
+"""AI-провайдер GigaChat."""
 
 from gigachat import GigaChat
 from .base_ai import BaseAI
@@ -8,13 +8,14 @@ class GigaChatAI(BaseAI):
     """Провайдер GigaChat."""
 
     def __init__(self, credentials: str):
+        super().__init__()
         self._client = GigaChat(credentials=credentials, verify_ssl_certs=False)
 
     @property
     def name(self) -> str:
         return "GigaChat"
 
-    def ask(self, prompt: str) -> str:
+    def _raw_ask(self, prompt: str) -> str:
         try:
             response = self._client.chat(prompt)
             result = response.choices[0].message.content

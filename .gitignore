@@ -2,6 +2,8 @@
 .env
 venv/
 .venv/
+venv1/
+.venv1/
 
 # Python
 __pycache__/
@@ -11,6 +13,9 @@ __pycache__/
 *.egg-info/
 dist/
 build/
+
+# Database
+*.db
 
 # IDE
 .vscode/

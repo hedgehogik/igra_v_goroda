@@ -16,6 +16,7 @@ HELP_TEXT = (
     "/model — выбрать AI-модель\n"
     "/voice — голосовые ответы\n"
     "/text — текстовые ответы\n"
+    "/stats — статистика запросов\n"
     "/help — эта справка\n\n"
     "*Как играть:*\n"
     "Напиши или произнеси название города.\n"
@@ -43,6 +44,7 @@ class TelegramBot:
             BotCommand("model", "Выбрать AI-модель"),
             BotCommand("voice", "Голосовые ответы"),
             BotCommand("text", "Текстовые ответы"),
+            BotCommand("stats", "Статистика запросов к AI"),
             BotCommand("help", "Справка"),
         ]
         self.bot.set_my_commands(commands)
@@ -52,7 +54,6 @@ class TelegramBot:
         return self._voice_modes.get(chat_id, False)
 
     def _send_voice_and_text(self, chat_id: int, text: str, voice_text: str | None = None):
-        """Отправляет голосовое + текстовое сообщение."""
         audio_path = self.audio.text_to_speech(voice_text or text)
         if audio_path:
             try:
@@ -92,6 +93,11 @@ class TelegramBot:
         def cmd_text(m):
             self._voice_modes[m.chat.id] = False
             self.bot.send_message(m.chat.id, "📝 Текстовые ответы включены")
+
+        @self.bot.message_handler(commands=["stats"])
+        def cmd_stats(m):
+            stats = self.gm.get_db_stats()
+            self.bot.send_message(m.chat.id, stats)
 
         @self.bot.message_handler(commands=["help"])
         def cmd_help(m):
@@ -151,8 +157,6 @@ class TelegramBot:
             )
 
     def _handle_city_input(self, chat_id: int, city_text: str, is_voice: bool = False):
-        """Обрабатывает пользовательский ввод города."""
-        # Показываем что бот думает
         self.bot.send_chat_action(chat_id, "typing")
 
         result = self.gm.process_city(chat_id, city_text)
@@ -166,7 +170,6 @@ class TelegramBot:
             self.gm.stop_game(chat_id)
             return
 
-        # Успешный ход
         response_text = result["text_response"]
         ai_city = result["ai_city"]
         use_voice = self._is_voice_mode(chat_id) or is_voice
@@ -176,7 +179,6 @@ class TelegramBot:
         else:
             self.bot.send_message(chat_id, response_text)
 
-        # Кнопка информации
         self.bot.send_message(
             chat_id,
             "👇",
@@ -184,7 +186,6 @@ class TelegramBot:
         )
 
     def run(self):
-        """Запускает polling."""
         print("🚀 Бот запущен и готов к работе!")
         print("   Нажмите Ctrl+C для остановки.\n")
         self.bot.infinity_polling(timeout=60, long_polling_timeout=60)

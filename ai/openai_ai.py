@@ -1,13 +1,14 @@
-"""AI-провайдер на основе OpenAI-совместимого API (VseGPT)."""
+"""AI-провайдер OpenAI-совместимый."""
 
 from openai import OpenAI
 from .base_ai import BaseAI
 
 
 class OpenAICompatibleAI(BaseAI):
-    """Провайдер для OpenAI-совместимых API (VseGPT и т.д.)."""
+    """Провайдер для VseGPT и совместимых API."""
 
-    def __init__(self, api_key: str, base_url: str, model: str = "openai/gpt-4o"):
+    def __init__(self, api_key: str, base_url: str, model: str = "openai/gpt-4o-mini"):
+        super().__init__()
         self._client = OpenAI(api_key=api_key, base_url=base_url)
         self._model = model
 
@@ -15,7 +16,7 @@ class OpenAICompatibleAI(BaseAI):
     def name(self) -> str:
         return "GPT-4o"
 
-    def ask(self, prompt: str) -> str:
+    def _raw_ask(self, prompt: str) -> str:
         try:
             response = self._client.chat.completions.create(
                 model=self._model,
@@ -25,8 +26,7 @@ class OpenAICompatibleAI(BaseAI):
                         "content": (
                             "Ты помощник для игры в города. "
                             "Отвечай кратко и точно. "
-                            "Когда тебя просят назвать город — пиши ТОЛЬКО название, "
-                            "без страны, без скобок, без пояснений."
+                            "Когда просят назвать город — пиши ТОЛЬКО название."
                         ),
                     },
                     {"role": "user", "content": prompt},

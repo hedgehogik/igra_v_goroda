@@ -18,7 +18,10 @@ class Config:
     # VseGPT (OpenAI-compatible)
     VSEGPT_API_KEY: str = os.getenv("VSEGPT_API_KEY", "")
     VSEGPT_BASE_URL: str = os.getenv("VSEGPT_BASE_URL", "https://api.vsegpt.ru/v1")
-    VSEGPT_MODEL: str = "openai/gpt-4o"
+    VSEGPT_MODEL: str = "openai/gpt-4o-mini"
+
+    # База данных
+    DATABASE_URL: str = os.getenv("DATABASE_URL", "sqlite:///cities_bot.db")
 
     # Игровые настройки
     MAX_AI_ATTEMPTS: int = 3
