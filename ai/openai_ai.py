@@ -8,7 +8,10 @@ class OpenAICompatibleAI(BaseAI):
     """Провайдер для VseGPT и совместимых API."""
 
     def __init__(self, api_key: str, base_url: str, model: str = "openai/gpt-4o-mini"):
+<<<<<<< HEAD
         super().__init__()
+=======
+>>>>>>> d33fd840da9d31c0225232827d56ce847e31adb8
         self._client = OpenAI(api_key=api_key, base_url=base_url)
         self._model = model
 
