@@ -7,3 +7,7 @@ pydub==0.25.1
 gTTS==2.5.4
 python-dotenv==1.1.0
 SQLAlchemy==2.0.41
+langchain
+langchain-openai
+langchain-community
+gigachat
